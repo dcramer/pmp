@@ -15,10 +15,11 @@ tests_require = [
 
 
 install_requires = [
+    'pip',
 ]
 
 setup(
-    name='pkg',
+    name='pmp',
     version='0.1.0',
     author='David Cramer',
     author_email='dcramer@gmail.com',
@@ -32,9 +33,9 @@ setup(
     tests_require=tests_require,
     license='Apache License 2.0',
     include_package_data=True,
-    # entry_points={
-    #     'console_scripts': [
-    #         'sentry = sentry.utils.runner:main',
-    #     ],
-    # },
+    entry_points={
+        'console_scripts': [
+            'sentry = sentry.utils.runner:main',
+        ],
+    },
 )
