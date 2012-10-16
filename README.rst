@@ -1,4 +1,6 @@
-As pip installs packages, pmp manages packages.
+As pip installs packages, pmp manages projects.
+
+It provides a simple extensible command interface designed to influence good behavior in project management using existing tools (and minor hacks/additions).
 
 Optional Behaviors
 ------------------
@@ -7,6 +9,7 @@ Optional Behaviors
   * have bin/python deal with sites (as buildout does) so only items listed in lockfile (version specific) get bound
 * manage package version via publish? (project/VERSION?)
 * maintain a lockfile/requirements file (similar to requirements.txt, also used by the install commands)
+  * this could happen via a second command, or via install
 
 CLI
 ---
@@ -50,4 +53,16 @@ Concepts
 
 ::
 
-    pmp require [name]  # add to lockfile
+    # add to lockfile
+    pmp require [name]
+
+::
+
+    # update any top-level dependencies which have a newer version within range
+    # requires lockfile
+    pmp update 
+
+::
+
+    # generates a new setup.py, etc. for you
+    pmp it
