@@ -1,6 +1,6 @@
 import sys
 
-from .cli import CommandParser
+from .argparser import CommandParser
 from .commands import registry
 
 

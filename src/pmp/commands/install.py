@@ -4,7 +4,7 @@ from .base import Command, registry, arg
 @registry.add
 class InstallCommand(Command):
     """
-    Installs a package into the current environment.
+    Installs packages the current environment.
 
     Package name can be any of the following recognized formats:
 
@@ -16,12 +16,15 @@ class InstallCommand(Command):
 
     - github.com/user/pkg-name
     - bitbucket.com/user/pkg-name
+
+    If you do not pass an argument, '.' is assumed, which is equivilent
+    to running this command without arguments.
     """
 
     name = 'install'
-    short_desc = 'Installs a package'
+    short_desc = 'Install a package'
     arguments = (
-        arg('package', help='package name to install'),
+        arg('package', help='package name to install', required=True, multiple=True),
         arg('--dry-run'),
     )
 

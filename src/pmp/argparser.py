@@ -30,11 +30,16 @@ def color_output(message, color=None):
 
 
 class Argument(object):
-    def __init__(self, name, **kwargs):
-        self.positional = not name.startswith('-')
+    def __init__(self, name, var=None, help='', required=False, multiple=False):
         self.name = name
-        self.var = kwargs.get('var')
-        self.help = kwargs.get('help', '')
+        self.var = var  # same as dest in optparse
+        self.help = help
+        self.required = required
+        self.multiple = multiple
+
+    @property
+    def positional(self):
+        return not self.name.startswith('-')
 
 
 class Formatter(object):
@@ -62,7 +67,7 @@ class Formatter(object):
             self.write(template.format(command.name, command.short_desc))
 
     def print_command_usage(self, command):
-        self.print_basic_usage('install [package]')
+        self.print_basic_usage('%s %s' % (command.name, command.get_usage()))
 
         arguments = command.get_arguments()
         if arguments:
