@@ -32,8 +32,8 @@ class InstallCommand(Command):
     )
 
     def main(self, args):
+        # TODO: this command should reach into the pip internals to pull out the available arguments,
+        # as well as for installing the packages (so we're not piping stdout/etc).
         self.stream.write('Installing packages %s%s' % (colors.OKBLUE, ', '.join(map(repr, args))))
-        # if dry_run:
-        #     args.append('--dry-run')
         sh('pip', 'install', '--use-mirrors', *args)
         self.stream.write('Successfully installed %s packages' % len(args))
