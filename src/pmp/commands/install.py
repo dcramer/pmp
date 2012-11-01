@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 
 from .base import Command, registry, arg
-from pmp.shell import sh
+from pmp.shell import sh, colors
 
 
 @registry.add
@@ -30,5 +31,6 @@ class InstallCommand(Command):
         arg('--dry-run'),
     )
 
-    def run(self, args, **options):
-        sh('pip install %s' % (' '.join('%s' for x in args),), *args)
+    def main(self, args, **options):
+        self.stream.write('Installing packages %s%s' % (colors.OKBLUE, ' '.join(map(repr, args))))
+        sh('pip', 'install', *args, **options)

@@ -1,22 +1,8 @@
+from __future__ import absolute_import
+
 import inspect
 import sys
-
-
-class colors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-
-    def disable(self):
-        self.HEADER = ''
-        self.OKBLUE = ''
-        self.OKGREEN = ''
-        self.WARNING = ''
-        self.FAIL = ''
-        self.ENDC = ''
+from .shell import colors
 
 
 def color_output(message, color=None):
@@ -27,6 +13,10 @@ def color_output(message, color=None):
     output += message
     output += colors.ENDC
     return output
+
+
+class ArgumentError(Exception):
+    pass
 
 
 class Argument(object):
@@ -101,34 +91,49 @@ class CommandParser(object):
         self.subcommands = subcommands
         self.stream = formatter(self)
 
-    def add_option(self, *args, **kwargs):
-        self.parser.add_option(*args, **kwargs)
-
     def parse_args(self, argv):
         main_args, cmd_name, cmd_args = self.parse_subcommand(argv)
-        if cmd_name is None or cmd_name == 'help':
-            # TODO: 'help <command>'
-            if cmd_args:
-                if cmd_args[0] in self.subcommands:
-                    self.stream.print_command_usage(self.subcommands[cmd_args[0]]())
-                else:
-                    self.stream.print_basic_usage()
-                    self.stream.write("ERROR: No command by the name %r" % (cmd_name,), colors.FAIL)
-            else:
-                self.stream.print_full_usage()
+
+        # this might be a full fledged command
+        if cmd_name is None:
+            self.main(cmd_args)
+
+        elif cmd_name == 'help':
+            self.print_help(cmd_args)
             sys.exit(1)
 
         # Parser main options
-        (main_options, _) = self.parser.parse_args(main_args)
+        # TODO:
+        # (main_options, _) = self.parser.parse_args(main_args)
 
         if cmd_name not in self.subcommands:
             self.stream.print_basic_usage()
             self.stream.write("ERROR: No command by the name %r" % (cmd_name,), colors.FAIL)
             sys.exit(1)
-        command = self.subcommands[cmd_name]()
 
-        # cmd_options, cmd_args = cmd_parser.parse_args(cmd_args)
-        # return command, cmd_args, cmd_options.__dict__
+        command = self.subcommands[cmd_name](self.stream)
+
+        try:
+            cmd_args, cmd_options = self.parse_command_args(command, cmd_args)
+        except ArgumentError, exc:
+            self.stream.print_help(cmd_args)
+            self.stream.write("ERROR: Argument %r is not valid" % (str(exc),), colors.FAIL)
+            sys.exit(1)
+
+        return command, cmd_args, cmd_options
+
+    def parse_command_args(self, command, cmd_args):
+        all_args = command.arguments
+
+        args, kwargs = [], {}
+        for arg in cmd_args:
+            if arg.startswith('-'):
+                if arg not in all_args:
+                    raise ArgumentError(arg)
+                kwargs.append(arg)
+            else:
+                args.append(arg)
+        return args, kwargs
 
     def parse_subcommand(self, args):
         """
@@ -154,3 +159,19 @@ class CommandParser(object):
 
     def get_subcommands(self):
         return self.subcommands.itervalues()
+
+    def print_help(self, args):
+        # help <command>
+        if args and args[0] in self.subcommands:
+            self.stream.print_command_usage(self.subcommands[args[0]](self.stream))
+            # if args[0] in self.subcommands:
+            # else:
+                # self.stream.print_basic_usage()
+                # self.stream.write("ERROR: No command by the name %r" % (cmd_name,), colors.FAIL)
+
+        else:
+            self.stream.print_full_usage()
+
+    def main(self, args):
+        self.print_help()
+        sys.exit(1)

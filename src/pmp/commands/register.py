@@ -14,6 +14,6 @@ class RegisterCommand(Command):
         arg('--check'),
     )
 
-    def run(self, args, **options):
+    def main(self, args, **options):
         print "Args:", args
         print "Kwargs:", options

@@ -14,6 +14,6 @@ class DevelopCommand(Command):
     arguments = (
     )
 
-    def run(self, args, **options):
+    def main(self, args, **options):
         # pip install -e .
         pass

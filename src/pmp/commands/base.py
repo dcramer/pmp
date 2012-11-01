@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 __all__ = ('CommandRegistry', 'Command', 'Argument')
 
 
@@ -18,6 +20,9 @@ class Command(object):
     name = ''
     short_desc = ''
     arguments = ()
+
+    def __init__(self, stream, **kwargs):
+        self.stream = stream
 
     def get_arguments(self):
         return [a for a in self.arguments if a.positional]
@@ -46,7 +51,7 @@ class Command(object):
 
         return ' '.join(output)
 
-    def run(self, **options):
+    def main(self, **options):
         raise NotImplementedError
 
 arg = Argument

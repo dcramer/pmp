@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import sys
 
 from .argparser import CommandParser
@@ -10,7 +12,7 @@ def main(argv=None):
 
     parser = CommandParser(registry)
     command, cmd_args, cmd_kwargs = parser.parse_args(argv)
-    command.run(cmd_args, **cmd_kwargs)
+    command.main(cmd_args, **cmd_kwargs)
 
 if __name__ == '__main__':
     main()
