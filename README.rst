@@ -65,4 +65,32 @@ Concepts
 ::
 
     # generates a new setup.py, etc. for you
-    pmp it
+    pmp bootstrap
+
+
+Packaging (Alternative to setuptools)
+-------------------------------------
+
+Much like Distribute, pmp will allow you to require it to install your package. This will give the benefit
+of being able to bind to various sources and support excess metadata that setuptools does not.
+
+::
+
+    # setup.py
+    from .pmpstrap import setup
+
+    setup(
+        # ...
+    )
+
+You would include a pmpstrap.py in your distribution, which could be generated via a simple command line
+tool::
+
+    pmp bootstrap
+
+This file would simply check for the existance of pmp, and if it's not present (or if it's a version which
+is too old for your package), it would install it. Re-running ``pmp it`` would bind your project to the
+latest version of pmp.
+
+.. note:: pmp is designed for isolated environments (e.g. virtualenv) so that the pmp version required by
+          your package would not affect any other packages on the system.
