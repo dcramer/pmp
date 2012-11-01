@@ -1,4 +1,6 @@
+
 from .base import Command, registry, arg
+from pmp.shell import sh
 
 
 @registry.add
@@ -29,5 +31,4 @@ class InstallCommand(Command):
     )
 
     def run(self, args, **options):
-        print "Args:", args
-        print "Kwargs:", options
+        sh('pip install %s' % (' '.join('%s' for x in args),), *args)
