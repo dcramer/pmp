@@ -28,9 +28,12 @@ class InstallCommand(Command):
     short_desc = 'Install a package'
     arguments = (
         arg('package', help='package name to install', required=True, multiple=True),
-        arg('--dry-run'),
+        # arg('--dry-run'),
     )
 
-    def main(self, args, **options):
-        self.stream.write('Installing packages %s%s' % (colors.OKBLUE, ' '.join(map(repr, args))))
-        sh('pip', 'install', *args, **options)
+    def main(self, args):
+        self.stream.write('Installing packages %s%s' % (colors.OKBLUE, ', '.join(map(repr, args))))
+        # if dry_run:
+        #     args.append('--dry-run')
+        sh('pip', 'install', '--use-mirrors', *args)
+        self.stream.write('Successfully installed %s packages' % len(args))

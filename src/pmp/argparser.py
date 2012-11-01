@@ -27,6 +27,11 @@ class Argument(object):
         self.required = required
         self.multiple = multiple
 
+    def __eq__(self, other):
+        if isinstance(other, Argument):
+            return self == other
+        return self.name == other
+
     @property
     def positional(self):
         return not self.name.startswith('-')
@@ -99,7 +104,10 @@ class CommandParser(object):
             self.main(cmd_args)
 
         elif cmd_name == 'help':
-            self.print_help(cmd_args)
+            if cmd_args:
+                self.print_help(cmd_args, cmd_args[1:])
+            else:
+                self.print_help(None, cmd_args)
             sys.exit(1)
 
         # Parser main options
@@ -108,7 +116,7 @@ class CommandParser(object):
 
         if cmd_name not in self.subcommands:
             self.stream.print_basic_usage()
-            self.stream.write("ERROR: No command by the name %r" % (cmd_name,), colors.FAIL)
+            self.stream.write("\nERROR: No command by the name %r" % (cmd_name,), colors.FAIL)
             sys.exit(1)
 
         command = self.subcommands[cmd_name](self.stream)
@@ -116,8 +124,8 @@ class CommandParser(object):
         try:
             cmd_args, cmd_options = self.parse_command_args(command, cmd_args)
         except ArgumentError, exc:
-            self.stream.print_help(cmd_args)
-            self.stream.write("ERROR: Argument %r is not valid" % (str(exc),), colors.FAIL)
+            self.print_help(cmd_name, cmd_args)
+            self.stream.write("\nERROR: %r is not valid argument" % (str(exc),), colors.FAIL)
             sys.exit(1)
 
         return command, cmd_args, cmd_options
@@ -128,9 +136,22 @@ class CommandParser(object):
         args, kwargs = [], {}
         for arg in cmd_args:
             if arg.startswith('-'):
+                if arg.startswith('--'):
+                    if '=' in arg:
+                        arg, argvalue = arg.split('=', 1)
+                    else:
+                        arg, argvalue = arg, True
+                    argname = arg[2:]
+                else:
+                    argvalue = True
+                    argname = arg[1:]
+
+                argname = argname.replace('-', '_')
+
+                # TODO: make this faster
                 if arg not in all_args:
                     raise ArgumentError(arg)
-                kwargs.append(arg)
+                kwargs[argname] = argvalue
             else:
                 args.append(arg)
         return args, kwargs
@@ -160,10 +181,10 @@ class CommandParser(object):
     def get_subcommands(self):
         return self.subcommands.itervalues()
 
-    def print_help(self, args):
+    def print_help(self, cmd_name, args=None):
         # help <command>
-        if args and args[0] in self.subcommands:
-            self.stream.print_command_usage(self.subcommands[args[0]](self.stream))
+        if cmd_name in self.subcommands:
+            self.stream.print_command_usage(self.subcommands[cmd_name](self.stream))
             # if args[0] in self.subcommands:
             # else:
                 # self.stream.print_basic_usage()

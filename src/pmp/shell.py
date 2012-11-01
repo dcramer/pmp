@@ -22,6 +22,6 @@ class colors:
 
 
 def sh(*args, **kwargs):
-    # kwargs.setdefault('stdout', sys.stdout)
+    kwargs.setdefault('stdout', subprocess.PIPE)
     kwargs.setdefault('stderr', sys.stderr)
     return subprocess.check_call(args, **kwargs)
