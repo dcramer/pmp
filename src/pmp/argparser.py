@@ -105,7 +105,7 @@ class CommandParser(object):
 
         elif cmd_name == 'help':
             if cmd_args:
-                self.print_help(cmd_args, cmd_args[1:])
+                self.print_help(cmd_args[0], cmd_args[1:])
             else:
                 self.print_help(None, cmd_args)
             sys.exit(1)
