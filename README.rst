@@ -89,7 +89,7 @@ tool::
     pmp bootstrap
 
 This file would simply check for the existance of pmp, and if it's not present (or if it's a version which
-is too old for your package), it would install it. Re-running ``pmp it`` would bind your project to the
+is too old for your package), it would install it. Re-running ``pmp bootstrap`` would bind your project to the
 latest version of pmp.
 
 .. note:: pmp is designed for isolated environments (e.g. virtualenv) so that the pmp version required by
