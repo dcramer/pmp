@@ -27,13 +27,16 @@ class InstallCommand(Command):
     name = 'install'
     short_desc = 'Install a package'
     arguments = (
-        arg('package', help='package name to install', required=True, multiple=True),
+        arg('package', help='package name to install', required=False,
+            multiple=True),
         # arg('--dry-run'),
     )
 
-    def main(self, args):
+    def main(self, packages):
+        if not packages:
+            packages = ['.']
         # TODO: this command should reach into the pip internals to pull out the available arguments,
         # as well as for installing the packages (so we're not piping stdout/etc).
-        self.stream.write('Installing packages %s%s' % (colors.OKBLUE, ', '.join(map(repr, args))))
-        sh('pip', 'install', '--use-mirrors', *args)
-        self.stream.write('Successfully installed %s packages' % len(args))
+        self.stream.write('Installing packages %s%s' % (colors.OKBLUE, ', '.join(map(repr, packages))))
+        sh('pip', 'install', '--use-mirrors', *packages)
+        self.stream.write('Successfully installed %s packages' % len(packages))
