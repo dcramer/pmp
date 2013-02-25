@@ -22,7 +22,7 @@ CLI
 
     pmp install  # pip install .
     pmp install <name>  # pip install <name>
-    pmp install <github url|bitbucket url|googlecode url>  # pip install <repo>
+    pmp install github.com/dcramer/pmp  # pip install <repo short url>
 
 ::
 
