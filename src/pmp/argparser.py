@@ -181,7 +181,7 @@ class CommandParser(object):
     def get_subcommands(self):
         return self.subcommands.itervalues()
 
-    def print_help(self, cmd_name, args=None):
+    def print_help(self, cmd_name=None, args=None):
         # help <command>
         if cmd_name in self.subcommands:
             self.stream.print_command_usage(self.subcommands[cmd_name](self.stream))
